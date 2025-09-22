@@ -107,7 +107,6 @@ export default {
           alert(res.data.message || "取得訂單失敗");
         }
       } catch (err) {
-        console.error(err);
         alert("網路錯誤");
       } finally {
         this.isLoad = false;
@@ -133,7 +132,6 @@ export default {
           alert(res.data.message || '刪除失敗');
         }
       } catch (err) {
-        console.error(err);
         alert('網路錯誤，刪除失敗');
       }
     },

@@ -173,15 +173,12 @@ export default {
             }
           )
           if (res.data.success) {
-            console.log('檔案上傳成功', res.data.imageUrl)
             // 將上傳結果存到 tempProduct.image
             this.tempProduct.image = res.data.imageUrl
           } else {
             alert(res.data.message || '檔案上傳失敗')
-            console.warn(res.data)  // 印出回傳內容方便除錯
           }
         } catch (err) {
-          console.error(err)
           alert('上傳發生錯誤')
         }
       }

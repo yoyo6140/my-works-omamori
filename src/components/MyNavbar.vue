@@ -1,15 +1,12 @@
 <template>
-  <!-- 🔹 上方輕量頂欄 -->
-  <div class="top-bar d-flex justify-content-end p-2 ">
-    <router-link to="/admin/products" class="primary me-2">
-      管理登入
-    </router-link>
-    <router-link :to="{name:'CallMe'}" class="secondary">
-      聯絡我們
-    </router-link>
-  </div>
-
-  <!-- 🔹 主 navbar -->
+  <div class="top-bar d-flex justify-content-end p-1 ">
+      <router-link to="/admin/products" class="primary me-1">
+        管理登入
+      </router-link>
+      <router-link :to="{name:'CallMe'}" class="secondary">
+        聯絡我們
+      </router-link>
+    </div>
   <nav class="navbar navbar-expand-lg navbar-light bg-light shadow-sm">
     <div class="container-fluid">
       <router-link class="navbar-brand fw-bold" :to="{ name: 'MyHome' }">
@@ -37,12 +34,13 @@ export default {
 </script>
 
 <style scoped>
-.top-bar {
-  border-bottom: 1px solid #e0e0e0; /* 可選：加分隔線 */
-}
 
-a {
-  text-decoration: none; /* 移除底線 */
+.navbar {
+  padding-top: 0.25rem;
+  padding-bottom: 0.25rem;
+}
+.top-bar {
+  font-size: 10px;
 }
 
 </style>

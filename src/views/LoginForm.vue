@@ -60,16 +60,14 @@ export default {
       try {
         const res = await axios.post(api, this.user);
         if(res.data.success) {
-          const { token, expired } = res.data;
+          const { token, expired } = res.data;   
           document.cookie = `token=${token}; expires=${new Date(expired).toUTCString()}; path=/`;
           this.$router.push('/admin/products');
-          console.log('登入成功')
+          alert('登入成功')
         } else {
           alert(res.data.message || '登入失敗');
-          console.log(res)
         }
       } catch (err) {
-        console.error(err);
         alert('網路錯誤');
       }
     }

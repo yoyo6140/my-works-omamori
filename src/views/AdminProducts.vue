@@ -103,7 +103,6 @@ export default {
       isLoad: true,
       products: [],
       pagination:{},
-      apiPath: "omamori_api",
       selectedProduct: {}
     };
   },
@@ -122,10 +121,8 @@ export default {
           this.pagination = res.data.pagination; // 確保 pagination 包含 total_pages & current_page
         } else {
           alert(res.data.message || "取得產品失敗");
-          console.log(res);
         }
       } catch (err) {
-        console.error(err);
         alert("網路錯誤");
       } finally {
         this.isLoad = false;
@@ -153,7 +150,7 @@ export default {
           alert(res.data.message || '刪除失敗');
         }
       } catch (err) {
-        console.error(err);
+
         alert('網路錯誤，刪除失敗');
       }
     }

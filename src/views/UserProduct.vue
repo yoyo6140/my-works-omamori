@@ -1,11 +1,13 @@
 <template>
-  <div>
+  <loading-spinner v-if="isLoading"></loading-spinner>
+
+   
+  <div class="container mt-3" v-else>
     <my-navbar></my-navbar>
     <hero-carousel></hero-carousel>
-    <div class="container mt-3">
     <!-- 麵包屑 -->
-    <nav aria-label="breadcrumb" class="mb-3">
-      <ol class="breadcrumb">
+    <nav aria-label="breadcrumb" class="row mb-3">
+      <ol class="col-7   justify-content-center mt-3  breadcrumb">
         <li class="breadcrumb-item">
           <router-link to="/">首頁</router-link>
         </li>
@@ -19,59 +21,44 @@
         </li>
       </ol>
     </nav>
-    </div>
-    <div class="container mt-5">
-      <div v-if="isLoading" class="text-center py-5">
-        <loading-spinner></loading-spinner>
-      </div>
-
-      <div v-else class="row justify-content-center">
-        <!-- 左側圖片輪播 + 縮圖 -->
-        <div class="col-md-4">
-          <div id="productCarousel" class="carousel slide mb-3" data-bs-ride="carousel">
-            <div class="carousel-inner">
-              <div class="carousel-item active">
-                <img
-                  :src="product.imageUrl || '/images/default.png'"
-                  class="d-block w-100"
-                  style="height: 300px; object-fit: cover;"
-                  alt="主圖"
-                >
-              </div>
+    <div class="row justify-content-center">
+      <!-- 左側圖片輪播 + 縮圖 -->
+      <div class="col-md-4">
+        <div id="productCarousel" class="carousel slide mb-3" data-bs-ride="carousel">
+          <div class="carousel-inner">
+            <div class="carousel-item active">
+              <img
+                :src="product.imageUrl "
+                class="d-block w-100"
+                style="height: 300px; object-fit: cover;"
+                alt="主圖"
+              >
             </div>
-
-            <!-- 左右控制按鈕 -->
-            <button class="carousel-control-prev" type="button" data-bs-target="#productCarousel" data-bs-slide="prev">
-              <span class="carousel-control-prev-icon"></span>
-            </button>
-            <button class="carousel-control-next" type="button" data-bs-target="#productCarousel" data-bs-slide="next">
-              <span class="carousel-control-next-icon"></span>
-            </button>
           </div>
         </div>
+      </div>
 
-        <!-- 右側產品資訊卡片 -->
-        <div class="col-md-5">
-          <div class="card shadow-sm p-3">
-            <h2 class="card-title">{{ product.title }}</h2>
-            <p class="text-muted mb-1">分類：{{ product.category }}</p>
-
-            <p class="fs-5 mb-2">
-              <span class="text-danger fw-bold">{{ product.price }} 元</span>
-            </p>
-
-            <p class="mb-2">{{ product.description }}</p>
-            <p class="text-muted small">商品說明：{{ product.content }}</p>
-
-            <button class="btn btn-danger w-100" @click="addCart(product.id)">
-              加到購物車
-            </button>
-          </div>
+      <!-- 右側產品資訊卡片 -->
+      <div class="col-md-5">
+        <div class="card shadow-sm p-3">
+          <h2 class="card-title">{{ product.title }}</h2>
+          <p class="text-muted mb-1">分類：{{ product.category }}</p>
+          <p class="mb-2">商品:{{ product.description }}</p>
+          <p class="text-muted small">說明：{{ product.content }}</p>
+          <p class="fs-5 mb-2">
+            <span class="text-danger fw-bold">價格:{{ product.price }} 元</span>
+          </p>
+          <button class="btn btn-danger w-100" @click="addCart(product.id)">
+            加到購物車
+          </button>
         </div>
       </div>
     </div>
     <my-footer></my-footer>
+    
   </div>
+    
+  
   <router-link :to="{name:'UserCarts'}" class="cart-btn" title="前往購物車">
     <div>
     <img src="/images/carts.png" alt="購物車" class="cart-icon">
@@ -166,7 +153,7 @@ img {
 .cart-btn {
   position: fixed;
   
-  bottom: 30px;
+  bottom:60px;
   right: 30px;
   width: 100px;
   height: 100px;

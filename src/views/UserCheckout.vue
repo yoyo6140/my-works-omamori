@@ -1,6 +1,7 @@
 <template>
-  <my-navbar></my-navbar>
+  
   <div class="container mt-4">
+    <my-navbar></my-navbar>
     <div class="row justify-content-center">
       <div class="col-8">
         <!-- 🔹 三步驟圓形顯示 -->
@@ -254,17 +255,13 @@ export default {
       const url = `${process.env.VUE_APP_API}api/${process.env.VUE_APP_PATH}/order`;
       this.$http.post(url, { data: this.order })
         .then(res => {
-          console.log('Step 1 API 回傳:', res.data);
-
           if (res.data.success) {
             const orderId = res.data.orderId;
 
             // ✅ 再呼叫一次完整訂單 API
             const detailUrl = `${process.env.VUE_APP_API}api/${process.env.VUE_APP_PATH}/order/${orderId}`;
             this.$http.get(detailUrl)
-              .then(detailRes => {
-                console.log('完整訂單資料:', detailRes.data);
-                
+              .then(detailRes => {                
                 // 把完整訂單資料指派給 this.order
                 this.order = detailRes.data.order;
 
@@ -275,8 +272,7 @@ export default {
             alert('建立訂單失敗，請稍後再試');
           }
         })
-        .catch(err => {
-          console.error(err);
+        .catch(() => {
           alert('送出訂單時發生錯誤');
         });
     },

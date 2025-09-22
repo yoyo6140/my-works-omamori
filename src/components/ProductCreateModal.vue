@@ -165,18 +165,15 @@ export default {
                 );
 
                 if(res.data.success) {
-                    console.log('產品資料', this.tempProduct)
                     this.hideModal()
                     this.$emit('refresh-products')
                     this.tempProduct = {is_enabled: 0 }
                 } else {
                     alert(res.data.message)
-                    console.log(res)
                     }
                     
                 } 
             catch(err) {
-                console.error(err);
                 alert('新增產品失敗');
             }
         },
@@ -208,7 +205,6 @@ export default {
               alert(res.data.message || '檔案上傳失敗');
             }
           } catch (err) {
-            console.error(err);
             alert('上傳圖片失敗');
           }finally {
             this.isUploading = false

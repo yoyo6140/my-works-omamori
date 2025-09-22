@@ -163,7 +163,6 @@ export default {
           alert(res.data.message);
         }
       } catch(err) {
-        console.error(err);
         alert('修改產品失敗');
       }
     },
@@ -189,7 +188,6 @@ export default {
           alert(res.data.message || '檔案上傳失敗');
         }
       } catch(err) {
-        console.error(err);
         alert('上傳圖片失敗');
       } finally {
         this.isUploading = false;

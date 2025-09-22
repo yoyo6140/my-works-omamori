@@ -112,7 +112,6 @@ export default {
           alert(res.data.message || '取得優惠券失敗');
         }
       } catch(err) {
-        console.error(err);
         alert('取得優惠券發生錯誤');
       } finally {
         this.isLoad = false;
@@ -148,7 +147,6 @@ export default {
           alert(res.data.message || '操作失敗');
         }
       } catch(err){
-        console.error(err);
         alert('操作發生錯誤');
       }
     },
@@ -171,7 +169,6 @@ export default {
           alert(res.data.message || '刪除失敗');
         }
       } catch(err){
-        console.error(err);
         alert('刪除發生錯誤');
       } finally {
         this.isLoad = false;

@@ -7,6 +7,7 @@
       <div class="mb-1 ">
         <p class="mb-0">本網站所呈現的商品與圖片僅為示範使用，並非真實販售行為，所有圖片與素材若涉及版權，僅用於教育與作品展示目的，未作商業用途。</p>
       </div>
+      
     </div>
   </footer>
 </template>
@@ -28,4 +29,7 @@ export default {
   border-radius: 50px;
   padding: 5px 15px;
 }
+
+
+
 </style>

@@ -30,7 +30,6 @@ const routes = [
       path:'/admin',
       name:'DashBoard',
       component:DashBoard,
-      meta: { requiresAuth: true },
       children:[
         {
           path:'products',
@@ -94,7 +93,6 @@ const router = createRouter({
 // ✅ router 守衛只檢查 cookie 是否存在
 router.beforeEach((to, from, next) => {
   const token = Cookies.get('token');
-
   if (to.meta.requiresAuth && !token) {
     alert('登入已過期或尚未登入');
     next('/login');

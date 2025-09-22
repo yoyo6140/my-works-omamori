@@ -1,12 +1,10 @@
 <template>
+  
+  <loading-spinner v-if="isLoading"></loading-spinner>
+    
+  <div v-else class="container">
   <my-navbar></my-navbar>
   <hero-carousel></hero-carousel>
-  <div>
-    <loading-spinner v-if="isLoading"></loading-spinner>
-    
-    <div v-else>
-      
-    <div class="container">
       <div class="container mt-4">
         <div class="row">
           <!-- 左側分類欄 -->
@@ -19,7 +17,7 @@
                 class="list-group-item list-group-item-action"
                 :class="{ active: categoryFilter === cat }"
                 @click="categoryFilter = cat">
-                <img src="/images/torii.png" alt="icon" style="width:20px; height:20px;" class="me-2">
+                <img :src="require('@/assets/torii.png')" alt="icon" style="width:20px; height:20px;" class="me-2">
                 {{ cat }}
               </button>
             </div>
@@ -32,7 +30,7 @@
                 <div class="card h-100">
                   <div class="card-img-top" 
                        :style="{ 
-                          backgroundImage: `url(${item.imageUrl || '/images/default.png'})`, 
+                          backgroundImage: `url(${item.imageUrl})`, 
                           height: '200px',
                           backgroundSize: 'cover',
                           backgroundPosition: 'center'
@@ -42,7 +40,7 @@
                   <div class="mb-3">
                     <div class="row">
                       <h5 class="card-title text-start">
-                        <img src="/images/torii.png" alt="icon" style="width:20px; height:20px;" class="me-2">
+                        <img :src="require('@/assets/torii.png')" alt="icon" style="width:20px; height:20px;" class="me-2">
                         {{ item.title }}</h5>
                     </div>
                     <div class="row">
@@ -73,17 +71,15 @@
             </div>
           </div>
         </div>
+        <my-footer></my-footer>
       </div>
-
-      
-    </div>
   </div>
-  </div>
-  <my-footer></my-footer>
+  
+  
   <!-- 右下固定購物車按鈕，直接路由跳轉 -->
   <router-link :to="{name:'UserCarts'}" class="cart-btn" title="前往購物車">
     <div>
-    <img src="/images/carts.png" alt="購物車" class="cart-icon">
+    <img :src="require('@/assets/carts.png')" alt="購物車" class="cart-icon">
     <span class="carts  bg-warning">{{ cartCount }}</span>
     </div>
   </router-link>
@@ -108,7 +104,7 @@ export default {
         "近畿・中國・四國（西部）",
         "九州・沖繩（南部）"
       ],
-      categoryFilter: '',  // 先空，稍後在 created 設為第一個分類
+      categoryFilter: '',  
       isLoading: true,
       cartCount: 0
     }

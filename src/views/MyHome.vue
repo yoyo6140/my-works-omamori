@@ -2,18 +2,16 @@
   
   <loading-spinner v-if="isLoad" ></loading-spinner>
 
-  <div v-else>
+  <div v-else class="container">
     <my-navbar></my-navbar>
-    
-      <hero-carousel></hero-carousel> 
-      <omamori-intro></omamori-intro>
-      <router-view></router-view>
-    
+    <hero-carousel></hero-carousel> 
+    <omamori-intro></omamori-intro>
+    <router-view></router-view>
     <my-footer></my-footer>
   </div>
   <router-link :to="{name:'UserGoods'}" class="cart-btn" title="前往購物">
     <div>
-    <img src="/images/buy.png" alt="產品" class="cart-icon">
+    <img :src="require('@/assets/buy.png')" alt="產品" class="cart-icon">
     </div>
   </router-link>
 </template>
@@ -62,7 +60,7 @@ export default {
 .cart-btn {
   position: fixed;
   
-  bottom: 30px;
+  bottom: 60px;
   right: 30px;
   width: 100px;
   height: 100px;

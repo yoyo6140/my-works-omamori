@@ -1,7 +1,7 @@
 <template>
    <loading-spinner v-if="isLoad"></loading-spinner>
   
-  <div v-else>
+  <div v-else class="container">
     <my-navbar></my-navbar>
     <div class="container mt-4">
       <h3>購物車</h3>
@@ -27,7 +27,7 @@
             <tr v-for="item in cart.carts" :key="item.id">
               <td class="d-flex align-items-center">
                 <img
-                  :src="item.product.imageUrl || '/images/default.png'"
+                  :src="item.product.imageUrl "
                   alt=""
                   style="width: 60px; height: 60px; object-fit: cover;"
                   class="me-2"
@@ -60,20 +60,22 @@
         </table>
 
         <!-- 優惠券輸入欄位 -->
-        <div class="input-group mb-3" style="max-width: 300px;">
-          <input
-            type="text"
-            class="form-control"
-            v-model="coupon_code"
-            placeholder="請輸入優惠碼"
-          >
-          <button
-            class="btn btn-outline-secondary"
-            type="button"
-            @click="applyCoupon"
-          >
-            套用優惠碼
-          </button>
+        <div class="d-flex justify-content-end mb-3">
+          <div class="input-group mb-3 d-flex justify-content-end" style="max-width: 300px;" >
+            <input
+              type="text"
+              class="form-control"
+              v-model="coupon_code"
+              placeholder="請輸入優惠碼"
+            >
+            <button
+              class="btn btn-outline-secondary"
+              type="button"
+              @click="applyCoupon"
+            >
+              套用優惠碼
+            </button>
+          </div>
         </div>
 
         <!-- 總計與折扣金額 -->
@@ -97,7 +99,8 @@
           class="btn btn-danger" 
           @click="checkout"
           :disabled="cart.carts.length === 0"
-          >前往結帳</button>
+          >前往結帳
+        </button>
      </div> 
     </div>
   </div>
