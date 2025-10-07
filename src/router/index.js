@@ -94,7 +94,6 @@ const router = createRouter({
 router.beforeEach((to, from, next) => {
   const token = Cookies.get('token');
   if (to.meta.requiresAuth && !token) {
-    alert('登入已過期或尚未登入');
     next('/login');
   } else {
     next();
