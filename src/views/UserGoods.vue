@@ -44,7 +44,7 @@
                         {{ item.title }}</h5>
                     </div>
                     <div class="row">
-                      <p class="card-text">{{ item.description }}</p>
+                      <p class="card-text">商品:{{ item.description }}</p>
                     </div>
                     <div class="row text-end">
                       <span class="text-warning">NT {{ item.price }} 元</span>
@@ -73,16 +73,17 @@
         </div>
         <my-footer></my-footer>
       </div>
+     <!-- 右下固定購物車按鈕，直接路由跳轉 -->
+    <router-link :to="{name:'UserCarts'}" class="cart-btn" title="前往購物車">
+      <div>
+      <img :src="require('@/assets/carts.png')" alt="購物車" class="cart-icon">
+      <span class="carts  bg-warning">{{ cartCount }}</span>
+      </div>
+    </router-link>
   </div>
   
   
-  <!-- 右下固定購物車按鈕，直接路由跳轉 -->
-  <router-link :to="{name:'UserCarts'}" class="cart-btn" title="前往購物車">
-    <div>
-    <img :src="require('@/assets/carts.png')" alt="購物車" class="cart-icon">
-    <span class="carts  bg-warning">{{ cartCount }}</span>
-    </div>
-  </router-link>
+ 
 
 </template>
 

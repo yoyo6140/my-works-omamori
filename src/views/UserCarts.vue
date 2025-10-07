@@ -1,7 +1,7 @@
 <template>
-   <loading-spinner v-if="isLoad"></loading-spinner>
+   
   
-  <div v-else class="container">
+  <div class="container">
     <my-navbar></my-navbar>
     <div class="container mt-4">
       <h3>購物車</h3>
@@ -112,15 +112,13 @@
 import Cookies from 'js-cookie'
 import MyNavbar from '@/components/MyNavbar.vue'
 import MyFooter from '@/components/MyFooter.vue'
-import LoadingSpinner from '@/components/LoadingSpinner.vue'
 
 export default {
   name: 'UserCarts',
   components: {
     MyNavbar,
-    MyFooter,
-    LoadingSpinner
-  },
+    MyFooter
+    },
   data() {
     return {
       
@@ -130,17 +128,14 @@ export default {
         final_total: 0
       },
       coupon_code: '',
-      isLoad:true
     }
   },
   methods: {
     getCarts() {
-      this.isLoad= true
       this.$http
         .get(`${process.env.VUE_APP_API}api/${process.env.VUE_APP_PATH}/cart`)
         .then(res => {
           this.cart = res.data.data || { carts: [], total: 0, final_total: 0 }
-          this.isLoad = false
         })
     },
     updateCart(item) {
