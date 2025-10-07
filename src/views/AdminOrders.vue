@@ -46,7 +46,7 @@
             <h6>商品清單</h6>
             <ul>
               <li v-for="(prod, key) in selectedOrder.products" :key="key">
-                商品ID: {{ prod.product_id }} | 數量: {{ prod.qty }}
+                商品ID: {{ prod.product.title }} | 數量: {{ prod.qty }}
               </li>
             </ul>
           </div>
@@ -84,7 +84,6 @@ export default {
         id: ''
       },
       modalInstance: null,
-      apiPath:'omamori_api',
       pagination:{},
     };
   },
@@ -119,8 +118,7 @@ export default {
 
       try {
         const token = Cookies.get('token') || '';
-        const apiBase = process.env.VUE_APP_API.replace(/\/$/, '');
-        const res = await axios.delete(`${apiBase}/api/${this.apiPath}/admin/order/${orderId}`, {
+        const res = await axios.delete(`${process.env.VUE_APP_API}api/${process.env.VUE_APP_PATH}/admin/order/${orderId}`, {
           headers: { Authorization: token }
         });
 
