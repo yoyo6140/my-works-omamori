@@ -61,7 +61,7 @@
   
   <router-link :to="{name:'UserCarts'}" class="cart-btn" title="前往購物車">
     <div>
-    <img src="/images/carts.png" alt="購物車" class="cart-icon">
+    <img :src="require('@/assets/carts.png')" alt="購物車" class="cart-icon">
     <span class="carts  bg-warning">{{ cartCount }}</span>
     </div>
   </router-link>

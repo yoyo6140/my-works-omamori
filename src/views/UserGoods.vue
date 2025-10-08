@@ -112,7 +112,6 @@ export default {
   },
   computed: {
     filteredProducts() {
-      if (!this.categoryFilter) return []
       return this.products.filter(p => p.category === this.categoryFilter)
     }
   },
