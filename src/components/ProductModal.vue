@@ -102,8 +102,9 @@
 <script>
 import { Modal } from 'bootstrap/dist/js/bootstrap.bundle.min';
 // import modalMixin from '../mixins/modalMinxin';
-import axios from 'axios';
 import Cookies from 'js-cookie'
+import { API, adminHeaders } from '@/constants/api'
+import { notify } from '@/components/MessageToast.vue'
 
 export default {
     name:'ProductModal',
@@ -136,7 +137,7 @@ export default {
     methods:{
        confirmProduct() {
         if (this.isNew && !this.tempProduct.image) {
-          alert('新增時必須上傳圖片'); 
+          notify.warn('新增時必須上傳圖片')
           return; // 前面 新增時候 要有圖片 編輯時候確定有無圖片
         }
         this.$emit('update-product', this.tempProduct)
@@ -160,26 +161,26 @@ export default {
         const formData = new FormData()
         formData.append('file-to-upload', uploadFile)
         try {
-          const token =  Cookies.get('hexToken') // 同上
-          const apiPath = 'yusei-api'
-          const res = await axios.post(
-            `https://vue3-course-api.hexschool.io/api/${apiPath}/admin/upload`,
-            formData,
-            {
-              headers: {
-                Authorization: token,
-                'Content-Type': 'multipart/form-data'
-              }
-            }
-          )
-          if (res.data.success) {
+          const token = Cookies.get('token') || ''
+          if (!token) {
+            notify.error('尚未登入或登入過期')
+            return
+          }
+          const httpRes = await fetch(API.adminUpload(), {
+            method: 'POST',
+            headers: adminHeaders(),
+            body: formData,
+          })
+          const res = await httpRes.json()
+
+          if (res.success) {
             // 將上傳結果存到 tempProduct.image
-            this.tempProduct.image = res.data.imageUrl
+            this.tempProduct.image = res.imageUrl
           } else {
-            alert(res.data.message || '檔案上傳失敗')
+            notify.error(res.message || '檔案上傳失敗')
           }
         } catch (err) {
-          alert('上傳發生錯誤')
+          notify.error('上傳發生錯誤')
         }
       }
     },

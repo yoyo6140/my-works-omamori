@@ -64,9 +64,9 @@
 <script>
 import LoadingSpinner from '@/components/LoadingSpinner.vue';
 import { Modal } from 'bootstrap/dist/js/bootstrap.bundle.min';
-import axios from 'axios';
-import Cookies from 'js-cookie';
 import MyPagination from '@/components/MyPagination.vue';
+import { API, adminHeaders } from '@/constants/api'
+import { notify } from '@/components/MessageToast.vue'
 
 export default {
   name:'AdminOrders',
@@ -92,21 +92,19 @@ export default {
     async getOrders(page = 1) {
       this.isLoad = true;
       try {
-        const token = Cookies.get('token') || '';
+        const httpRes = await fetch(API.adminOrders(page), {
+          headers: adminHeaders(),
+        })
+        const res = await httpRes.json()
 
-        const res = await axios.get(
-          `${process.env.VUE_APP_API}api/${process.env.VUE_APP_PATH}/admin/orders/?page=${page}`, {
-          headers: { Authorization: token }
-        });
-
-        if (res.data.success) {
-          this.orders = res.data.orders;
-          this.pagination = res.data.pagination;
+        if (res.success) {
+          this.orders = res.orders
+          this.pagination = res.pagination
         } else {
-          alert(res.data.message || "取得訂單失敗");
+          notify.error(res.message || '取得訂單失敗')
         }
       } catch (err) {
-        alert("網路錯誤");
+        notify.error('網路錯誤')
       } finally {
         this.isLoad = false;
       }
@@ -117,20 +115,21 @@ export default {
       if (!confirm('確定要刪除此訂單嗎？')) return;
 
       try {
-        const token = Cookies.get('token') || '';
-        const res = await axios.delete(`${process.env.VUE_APP_API}api/${process.env.VUE_APP_PATH}/admin/order/${orderId}`, {
-          headers: { Authorization: token }
-        });
+        const httpRes = await fetch(API.adminOrder(orderId), {
+          method: 'DELETE',
+          headers: adminHeaders(),
+        })
+        const res = await httpRes.json()
 
-        if (res.data.success) {
-          alert('刪除成功');
+        if (res.success) {
+          notify.success('刪除成功')
           // 刪除成功後重新取得訂單
           this.getOrders();
         } else {
-          alert(res.data.message || '刪除失敗');
+          notify.error(res.message || '刪除失敗')
         }
       } catch (err) {
-        alert('網路錯誤，刪除失敗');
+        notify.error('網路錯誤，刪除失敗')
       }
     },
 

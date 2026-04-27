@@ -88,16 +88,15 @@
 </template>
 
 <script>
-import axios from "axios";
-import Cookies from "js-cookie";
 import LoadingSpinner from "@/components/LoadingSpinner.vue";
 import ProductCreateModal from "@/components/ProductCreateModal.vue";
 import ProductEditModal from "@/components/ProductEditModal.vue";
 import MyPagination from "@/components/MyPagination.vue";
+import { API, adminHeaders } from '@/constants/api'
+import { notify } from '@/components/MessageToast.vue'
 export default {
   name: "ProductList",
   components:{LoadingSpinner,ProductCreateModal,ProductEditModal,MyPagination},
-  emits: ['update-product'],
   data() {
     return {
       isLoad: true,
@@ -110,20 +109,19 @@ export default {
     async getProducts(page = 1) {
       this.isLoad = true;
       try {
-        const token = Cookies.get('token') || '';
-        const res = await axios.get(
-          `${process.env.VUE_APP_API}api/${process.env.VUE_APP_PATH}/admin/products/?page=${page}`,
-          { headers: { Authorization: token } }
-        );
+        const httpRes = await fetch(API.adminProducts(page), {
+          headers: adminHeaders(),
+        })
+        const res = await httpRes.json()
 
-        if (res.data.success) {
-          this.products = res.data.products;
-          this.pagination = res.data.pagination; // 確保 pagination 包含 total_pages & current_page
+        if (res.success) {
+          this.products = res.products
+          this.pagination = res.pagination
         } else {
-          alert(res.data.message || "取得產品失敗");
+          notify.error(res.message || '取得產品失敗')
         }
       } catch (err) {
-        alert("網路錯誤");
+        notify.error('網路錯誤')
       } finally {
         this.isLoad = false;
       }
@@ -137,21 +135,20 @@ export default {
       if (!isConfirm) return;
 
       try {
-        const token = Cookies.get('token') || '';
-        const res = await axios.delete(
-          `${process.env.VUE_APP_API}api/${process.env.VUE_APP_PATH}/admin/product/${id}`,
-          { headers: { Authorization: token } }
-        );
+        const httpRes = await fetch(API.adminProduct(id), {
+          method: 'DELETE',
+          headers: adminHeaders(),
+        })
+        const res = await httpRes.json()
 
-        if (res.data.success) {
-          alert('刪除成功');
+        if (res.success) {
+          notify.success('刪除成功')
           this.getProducts(); // 刪除後重新取得產品列表
         } else {
-          alert(res.data.message || '刪除失敗');
+          notify.error(res.message || '刪除失敗')
         }
       } catch (err) {
-
-        alert('網路錯誤，刪除失敗');
+        notify.error('網路錯誤，刪除失敗')
       }
     }
   },

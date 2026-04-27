@@ -94,8 +94,8 @@
 
 <script>
 import { Modal } from 'bootstrap/dist/js/bootstrap.bundle.min';
-import Cookies from 'js-cookie';
-import axios from 'axios';
+import { API, adminHeaders } from '@/constants/api'
+import { notify } from '@/components/MessageToast.vue'
 
 export default {
   name: 'ProductEditModal',
@@ -144,26 +144,26 @@ export default {
     },
     async confirmEdit() {
       if(!this.tempProduct.imageUrl) {
-        alert('請先上傳圖片或輸入圖片網址');
+        notify.warn('請先上傳圖片或輸入圖片網址')
         return;
       }
 
       try {
-        const token = Cookies.get('token');
-        const res = await axios.put(
-          `${process.env.VUE_APP_API}api/${process.env.VUE_APP_PATH}/admin/product/${this.tempProduct.id}`,
-          { data: this.tempProduct },
-          { headers: { Authorization: token } }
-        );
+        const httpRes = await fetch(API.adminProduct(this.tempProduct.id), {
+          method: 'PUT',
+          headers: { ...adminHeaders(), 'Content-Type': 'application/json' },
+          body: JSON.stringify({ data: this.tempProduct }),
+        })
+        const res = await httpRes.json()
 
-        if(res.data.success) {
+        if(res.success) {
           this.hideModal();
           this.$emit('refresh-products');
         } else {
-          alert(res.data.message);
+          notify.error(res.message || '修改產品失敗')
         }
       } catch(err) {
-        alert('修改產品失敗');
+        notify.error('修改產品失敗')
       }
     },
     async uploadFile() {
@@ -175,20 +175,20 @@ export default {
       this.isUploading = true;
 
       try {
-        const token = Cookies.get('token');
-        const res = await axios.post(
-          `${process.env.VUE_APP_API}api/${process.env.VUE_APP_PATH}/admin/upload`,
-          formData,
-          { headers: { Authorization: token, 'Content-Type': 'multipart/form-data' } }
-        );
+        const httpRes = await fetch(API.adminUpload(), {
+          method: 'POST',
+          headers: adminHeaders(),
+          body: formData,
+        })
+        const res = await httpRes.json()
 
-        if(res.data.success) {
-          this.tempProduct.imageUrl = res.data.imageUrl;
+        if(res.success) {
+          this.tempProduct.imageUrl = res.imageUrl;
         } else {
-          alert(res.data.message || '檔案上傳失敗');
+          notify.error(res.message || '檔案上傳失敗')
         }
       } catch(err) {
-        alert('上傳圖片失敗');
+        notify.error('上傳圖片失敗')
       } finally {
         this.isUploading = false;
       }

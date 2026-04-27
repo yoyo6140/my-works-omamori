@@ -44,8 +44,10 @@
 </template>
 
 <script>
-import axios from "axios";
 import MyNavbar from "@/components/MyNavbar.vue";
+import Cookies from 'js-cookie'
+import { API } from '@/constants/api'
+import { notify } from '@/components/MessageToast.vue'
 export default {
   name: "LoginForm",
   components: { MyNavbar },
@@ -60,21 +62,24 @@ export default {
   },
   methods: {
     async signIn() {
-      const api = `${process.env.VUE_APP_API}admin/signin`;
       try {
-        const res = await axios.post(api, this.user);
-        if (res.data.success) {
-          const { token, expired } = res.data;
-          document.cookie = `token=${token}; expires=${new Date(
-            expired
-          ).toUTCString()}; path=/`;
+        const httpRes = await fetch(API.adminSignIn(), {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(this.user),
+        })
+        const res = await httpRes.json()
+
+        if (res.success) {
+          const { token, expired } = res
+          Cookies.set('token', token, { expires: new Date(expired) })
           this.$router.push("/admin/products");
-          alert("登入成功");
+          notify.success('登入成功')
         } else {
-          alert(res.data.message || "登入失敗");
+          notify.error(res.message || '登入失敗')
         }
       } catch (err) {
-        alert("網路錯誤");
+        notify.error('網路錯誤')
       }
     },
   },

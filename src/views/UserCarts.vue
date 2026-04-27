@@ -112,6 +112,8 @@
 import Cookies from 'js-cookie'
 import MyNavbar from '@/components/MyNavbar.vue'
 import MyFooter from '@/components/MyFooter.vue'
+import { API } from '@/constants/api'
+import { notify } from '@/components/MessageToast.vue'
 
 export default {
   name: 'UserCarts',
@@ -131,45 +133,67 @@ export default {
     }
   },
   methods: {
-    getCarts() {
-      this.$http
-        .get(`${process.env.VUE_APP_API}api/${process.env.VUE_APP_PATH}/cart`)
-        .then(res => {
-          this.cart = res.data.data || { carts: [], total: 0, final_total: 0 }
-        })
-    },
-    updateCart(item) {
-      const url = `${process.env.VUE_APP_API}api/${process.env.VUE_APP_PATH}/cart/${item.id}`
-      const cart = {
-        product_id: item.product_id,
-        qty: item.qty
+    async getCarts() {
+      try {
+        const httpRes = await fetch(API.cart())
+        const res = await httpRes.json()
+        this.cart = res.data || { carts: [], total: 0, final_total: 0 }
+      } catch (err) {
+        notify.error('取得購物車失敗')
+        this.cart = { carts: [], total: 0, final_total: 0 }
       }
-      this.$http.put(url, { data: cart }).then(() => this.getCarts())
     },
-    removeCart(id) {
-      this.$http
-        .delete(`${process.env.VUE_APP_API}api/${process.env.VUE_APP_PATH}/cart/${id}`)
-        .then(() => this.getCarts())
+    async updateCart(item) {
+      const cart = { product_id: item.product_id, qty: item.qty }
+      try {
+        await fetch(API.cartItem(item.id), {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ data: cart }),
+        })
+        this.getCarts()
+      } catch (err) {
+        notify.error('更新購物車失敗')
+      }
+    },
+    async removeCart(id) {
+      try {
+        await fetch(API.cartItem(id), { method: 'DELETE' })
+        this.getCarts()
+      } catch (err) {
+        notify.error('刪除商品失敗')
+      }
     },
     checkout() {
       if (this.cart.carts.length === 0) {
-        alert('購物車沒有商品，無法結帳！')
+        notify.warn('購物車沒有商品，無法結帳！')
         return
       }
       // 將購物車資料存在 cookie
       Cookies.set('checkoutCart', JSON.stringify(this.cart), { expires: 1 })
       this.$router.push({ name: 'UserCheckout' })
     },
-    applyCoupon() {
+    async applyCoupon() {
       if (!this.coupon_code) {
-        alert('請輸入優惠碼')
+        notify.warn('請輸入優惠碼')
         return
       }
-      const url = `${process.env.VUE_APP_API}api/${process.env.VUE_APP_PATH}/coupon`
-      this.$http.post(url, { data: { code: this.coupon_code } })
-        .then(() => {
-          this.getCarts()
+      try {
+        const httpRes = await fetch(API.coupon(), {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ data: { code: this.coupon_code } }),
         })
+        const res = await httpRes.json()
+        if (res?.success === false) {
+          notify.error(res.message || '套用優惠碼失敗')
+          return
+        }
+        notify.success('已套用優惠碼')
+        this.getCarts()
+      } catch (err) {
+        notify.error('套用優惠碼失敗')
+      }
     }
   },
   created() {

@@ -53,9 +53,9 @@
 <script>
 import LoadingSpinner from '@/components/LoadingSpinner.vue';
 import CouponModal from '../components/couponModals.vue';
-import Cookies from 'js-cookie';
-import axios from 'axios';
 import MyPagination from '@/components/MyPagination.vue';
+import { API, adminHeaders } from '@/constants/api'
+import { notify } from '@/components/MessageToast.vue'
 
 export default {
   name:'MyCoupons',
@@ -95,81 +95,67 @@ export default {
     },
 
     async getCoupons(page = 1 ) {
-      const token = Cookies.get('token');
-      const url = `${process.env.VUE_APP_API}api/${process.env.VUE_APP_PATH}/admin/coupons/?page=${page}`;
-
       try {
-        const res = await axios.get(url, {
-          headers: {
-            Authorization: token,
-            'Content-Type': 'application/json'
-          }
-        });
-        if(res.data.success){
-          this.coupons = res.data.coupons;
-          this.pagination = res.data.pagination;
+        const httpRes = await fetch(API.adminCoupons(page), {
+          headers: adminHeaders(),
+        })
+        const res = await httpRes.json()
+        if(res.success){
+          this.coupons = res.coupons
+          this.pagination = res.pagination
         } else {
-          alert(res.data.message || '取得優惠券失敗');
+          notify.error(res.message || '取得優惠券失敗')
         }
       } catch(err) {
-        alert('取得優惠券發生錯誤');
+        notify.error('取得優惠券發生錯誤')
       } finally {
         this.isLoad = false;
       }
     },
 
     async updateCoupon(tempCoupon) {
-      const token = Cookies.get('token');
-      let url = '';
-      let method = '';
-
-      if(this.isNew){
-        url = `${process.env.VUE_APP_API}api/${process.env.VUE_APP_PATH}/admin/coupon`;
-        method = 'post';
-      } else {
-        url = `${process.env.VUE_APP_API}api/${process.env.VUE_APP_PATH}/admin/coupon/${tempCoupon.id}`;
-        method = 'put';
-      }
+      const url = this.isNew ? API.adminCoupon() : API.adminCouponById(tempCoupon.id)
+      const method = this.isNew ? 'POST' : 'PUT'
 
       try{
-        const res = await axios({
+        const httpRes = await fetch(url, {
           method,
-          url,
-          headers: { Authorization: token, 'Content-Type':'application/json'},
-          data: { data: tempCoupon }
-        });
+          headers: { ...adminHeaders(), 'Content-Type': 'application/json' },
+          body: JSON.stringify({ data: tempCoupon }),
+        })
+        const res = await httpRes.json()
 
-        if(res.data.success){
-          this.$httpMessageState(res, this.isNew ? '新增優惠券' : '編輯優惠券');
+        if(res.success){
+          notify.success(this.isNew ? '新增優惠券成功' : '編輯優惠券成功')
           this.getCoupons();
           this.$refs.couponModal.hideModal();
         } else {
-          alert(res.data.message || '操作失敗');
+          notify.error(res.message || '操作失敗')
         }
       } catch(err){
-        alert('操作發生錯誤');
+        notify.error('操作發生錯誤')
       }
     },
 
     async delCoupon(item) {
-      const token = Cookies.get('token'); // ⚠️ 確保小寫一致
       const confirmDel = confirm(`確定要刪除優惠券 "${item.title}" 嗎？`);
       if(!confirmDel) return;
 
       this.isLoad = true;
       try {
-        const res = await axios.delete(
-          `${process.env.VUE_APP_API}api/${process.env.VUE_APP_PATH}/admin/coupon/${item.id}`,
-          { headers: { Authorization: token, 'Content-Type':'application/json'} }
-        );
-        if(res.data.success){
-          alert('刪除成功');
+        const httpRes = await fetch(API.adminCouponById(item.id), {
+          method: 'DELETE',
+          headers: adminHeaders(),
+        })
+        const res = await httpRes.json()
+        if(res.success){
+          notify.success('刪除成功')
           this.getCoupons();
         } else {
-          alert(res.data.message || '刪除失敗');
+          notify.error(res.message || '刪除失敗')
         }
       } catch(err){
-        alert('刪除發生錯誤');
+        notify.error('刪除發生錯誤')
       } finally {
         this.isLoad = false;
       }

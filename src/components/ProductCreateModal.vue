@@ -113,7 +113,8 @@
 <script>
 import { Modal } from 'bootstrap/dist/js/bootstrap.bundle.min';
 import Cookies from 'js-cookie';
-import axios from 'axios';
+import { API, adminHeaders } from '@/constants/api'
+import { notify } from '@/components/MessageToast.vue'
 export default {
     name:'ProductCreateModal',
     emits:['refresh-products'],
@@ -152,29 +153,29 @@ export default {
         
         async confirmProduct() {
             if (!this.tempProduct.imageUrl) {
-                alert('請先上傳圖片或輸入圖片網址');
+                notify.warn('請先上傳圖片或輸入圖片網址')
                 return;
             }
 
             try {
-                const token = Cookies.get('token');
-                const res = await axios.post(
-                    `${process.env.VUE_APP_API}api/${process.env.VUE_APP_PATH}/admin/product`,
-                    { data: this.tempProduct },
-                    { headers: { Authorization: token } }
-                );
+                const httpRes = await fetch(API.adminCreateProduct(), {
+                  method: 'POST',
+                  headers: { ...adminHeaders(), 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ data: this.tempProduct }),
+                })
+                const res = await httpRes.json()
 
-                if(res.data.success) {
+                if (res.success) {
                     this.hideModal()
                     this.$emit('refresh-products')
                     this.tempProduct = {is_enabled: 0 }
                 } else {
-                    alert(res.data.message)
+                    notify.error(res.message || '新增產品失敗')
                     }
                     
                 } 
             catch(err) {
-                alert('新增產品失敗');
+                notify.error('新增產品失敗')
             }
         },
         async uploadFile() {
@@ -189,23 +190,25 @@ export default {
             // 從 cookie 拿 token
             const token = Cookies.get('token');
             if (!token) {
-              alert('尚未登入或登入過期');
+              notify.error('尚未登入或登入過期')
               this.$router.push('/admin/signin');
               return;
             }
-            const res = await axios.post(
-              `${process.env.VUE_APP_API}api/${process.env.VUE_APP_PATH}/admin/upload`,
-              formData,
-              { headers: { Authorization: token, 'Content-Type': 'multipart/form-data' } }
-            );
 
-            if (res.data.success) {
-              this.tempProduct.imageUrl = res.data.imageUrl; // 上傳成功後存入 tempProduct
+            const httpRes = await fetch(API.adminUpload(), {
+              method: 'POST',
+              headers: adminHeaders(), // FormData 不要手動設定 Content-Type
+              body: formData,
+            })
+            const res = await httpRes.json()
+
+            if (res.success) {
+              this.tempProduct.imageUrl = res.imageUrl; // 上傳成功後存入 tempProduct
             } else {
-              alert(res.data.message || '檔案上傳失敗');
+              notify.error(res.message || '檔案上傳失敗')
             }
           } catch (err) {
-            alert('上傳圖片失敗');
+            notify.error('上傳圖片失敗')
           }finally {
             this.isUploading = false
           }
