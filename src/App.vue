@@ -1,13 +1,15 @@
 <template>
   <router-view />
+  <message-toast />
 
 </template>
 
 <script>
+import MessageToast from '@/components/MessageToast.vue'
 
 export default {
   name: 'App',
-  
+  components: { MessageToast },
 }
 </script>
 

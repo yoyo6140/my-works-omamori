@@ -231,6 +231,8 @@ import { localize, setLocale } from '@vee-validate/i18n';
 import zhTW from '@vee-validate/i18n/dist/locale/zh_TW.json';
 import Cookies from 'js-cookie'
 import MyNavbar from '@/components/MyNavbar.vue';
+import { API } from '@/constants/api'
+import { notify } from '@/components/MessageToast.vue'
 
 export default {
   name:'UserCheck',
@@ -252,38 +254,45 @@ export default {
       this.order.message = this.form.message;
 
       // Step1 送出訂單 API
-      const url = `${process.env.VUE_APP_API}api/${process.env.VUE_APP_PATH}/order`;
-      this.$http.post(url, { data: this.order })
-        .then(res => {
-          if (res.data.success) {
-            const orderId = res.data.orderId;
+      fetch(API.order(), {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ data: this.order }),
+      })
+        .then((r) => r.json())
+        .then((res) => {
+          if (res.success) {
+            const orderId = res.orderId
 
             // ✅ 再呼叫一次完整訂單 API
-            const detailUrl = `${process.env.VUE_APP_API}api/${process.env.VUE_APP_PATH}/order/${orderId}`;
-            this.$http.get(detailUrl)
-              .then(detailRes => {                
-                // 把完整訂單資料指派給 this.order
-                this.order = detailRes.data.order;
-
-                // 跳到 Step2
-                this.step = 2;
-              });
-          } else {
-            alert('建立訂單失敗，請稍後再試');
+            return fetch(API.orderById(orderId)).then((r) => r.json())
           }
+          notify.error('建立訂單失敗，請稍後再試')
+          return null
+        })
+        .then((detailRes) => {
+          if (!detailRes) return
+          this.order = detailRes.order
+          this.step = 2
         })
         .catch(() => {
-          alert('送出訂單時發生錯誤');
-        });
+          notify.error('送出訂單時發生錯誤')
+        })
     },
     payOrder() {
-      const url = `${process.env.VUE_APP_API}api/${process.env.VUE_APP_PATH}/pay/${this.order.id}`;
-      this.$http.post(url).then(res => {
-        if (res.data.success) {
+      fetch(API.pay(this.order.id), { method: 'POST' })
+        .then((r) => r.json())
+        .then(res => {
+        if (res.success) {
           this.order.is_paid = true;
           this.step = 3;
+        } else {
+          notify.error(res.message || '付款失敗')
         }
-      });
+      })
+        .catch(() => {
+          notify.error('付款失敗')
+        });
     }
   },
   created() {

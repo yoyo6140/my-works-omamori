@@ -2,17 +2,16 @@
   "name": "my-omamori",
   "version": "0.1.0",
   "private": true,
-   "homepage": "https://github.com/yoyo6140/my-works-omamori",
+  "homepage": "https://github.com/yoyo6140/my-works-omamori",
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint",
-     "deploy": "gh-pages -d dist"
+    "deploy": "gh-pages -d dist"
   },
   "dependencies": {
     "@vee-validate/i18n": "^4.15.1",
     "@vee-validate/rules": "^4.15.1",
-    "axios": "^1.11.0",
     "bootstrap": "^5.3.8",
     "core-js": "^3.8.3",
     "js-cookie": "^3.0.5",

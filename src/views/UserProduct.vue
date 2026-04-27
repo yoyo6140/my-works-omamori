@@ -74,6 +74,8 @@ import MyFooter from '@/components/MyFooter.vue'
 import LoadingSpinner from '@/components/LoadingSpinner.vue'
 // ✅ 直接 import bootstrap
 import * as bootstrap from 'bootstrap'
+import { API } from '@/constants/api'
+import { notify } from '@/components/MessageToast.vue'
 
 export default {
   name: 'UserProduct',
@@ -89,21 +91,36 @@ export default {
   },
   
   methods: {
-    getProduct() {
+    async getProduct() {
       const id = this.$route.params.id
-      this.$http.get(
-        `${process.env.VUE_APP_API}api/${process.env.VUE_APP_PATH}/product/${id}`)
-        .then(res => {
-          this.product = res.data.product
-          if (!this.product.imagesUrl) this.product.imagesUrl = []
-          this.isLoading = false
-        })
+      try {
+        const httpRes = await fetch(API.product(id))
+        const res = await httpRes.json()
+        this.product = res.product || {}
+        if (!this.product.imagesUrl) this.product.imagesUrl = []
+      } catch (err) {
+        notify.error('取得商品資料失敗')
+      } finally {
+        this.isLoading = false
+      }
     },
-    addCart(id) {
-      this.$http.post(
-        `${process.env.VUE_APP_API}api/${process.env.VUE_APP_PATH}/cart`, 
-        { data: { product_id: id, qty: 1 } })
-        .then(() => alert('已加入購物車'))
+    async addCart(id) {
+      try {
+        const httpRes = await fetch(API.cart(), {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ data: { product_id: id, qty: 1 } }),
+        })
+        const res = await httpRes.json()
+        if (res?.success === false) {
+          notify.error(res.message || '加入購物車失敗')
+          return
+        }
+        notify.success('已加入購物車')
+        this.updateCartCount()
+      } catch (err) {
+        notify.error('加入購物車失敗')
+      }
     },
     goToSlide(index) {
       const carouselEl = document.querySelector('#productCarousel')
@@ -111,16 +128,15 @@ export default {
       const carousel = bootstrap.Carousel.getInstance(carouselEl) || new bootstrap.Carousel(carouselEl)
       carousel.to(index)
     },
-    updateCartCount() {
-      this.$http.get(`${process.env.VUE_APP_API}api/${process.env.VUE_APP_PATH}/cart`)
-        .then(res => {
-          const carts = res.data.data.carts || []
-          // 將每個商品的 qty 加總，得到總件數
-          this.cartCount = carts.reduce((total, item) => total + (item.qty || 0), 0)
-        })
-        .catch(() => {
-          this.cartCount = 0
-        })
+    async updateCartCount() {
+      try {
+        const httpRes = await fetch(API.cart())
+        const res = await httpRes.json()
+        const carts = res?.data?.carts || []
+        this.cartCount = carts.reduce((total, item) => total + (item.qty || 0), 0)
+      } catch (err) {
+        this.cartCount = 0
+      }
     }
 
   },
