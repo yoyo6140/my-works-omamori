@@ -229,7 +229,6 @@ import { Form, Field, ErrorMessage, defineRule, configure } from 'vee-validate';
 import * as AllRules from '@vee-validate/rules';
 import { localize, setLocale } from '@vee-validate/i18n';
 import zhTW from '@vee-validate/i18n/dist/locale/zh_TW.json';
-import Cookies from 'js-cookie'
 import MyNavbar from '@/components/MyNavbar.vue';
 import { API } from '@/constants/api'
 import { notify } from '@/components/MessageToast.vue'
@@ -296,14 +295,18 @@ export default {
     }
   },
   created() {
-    // 初始化 cookie 資料
-    const cartData = Cookies.get('checkoutCart');
+    // 初始化 localStorage 資料
+    const cartData = localStorage.getItem('checkoutCart')
     if (cartData) {
-      const parsed = JSON.parse(cartData);
-      this.order = {
-        ...this.order,
-        ...parsed,
-        user: { ...this.order.user, ...(parsed.user || {}) }
+      try {
+        const parsed = JSON.parse(cartData)
+        this.order = {
+          ...this.order,
+          ...parsed,
+          user: { ...this.order.user, ...(parsed.user || {}) }
+        }
+      } catch (e) {
+        // ignore invalid cached data
       }
     }
 
