@@ -10,6 +10,7 @@
     <router-link :to="{ name: 'UserGoods' }" class="cart-btn" title="前往購物">
       <div>
         <img :src="require('@/assets/buy.png')" alt="產品" class="cart-icon" />
+        <span class="carts bg-warning">{{ cartCount }}</span>
       </div>
     </router-link>
   </div>
@@ -21,6 +22,7 @@ import HeroCarousel from "@/components/HeroCarousel.vue";
 import OmamoriIntro from "@/components/OmamoriIntro.vue";
 import MyFooter from "@/components/MyFooter.vue";
 import LoadingSpinner from "@/components/LoadingSpinner.vue";
+import { API } from "@/constants/api";
 
 export default {
   name: "MyHome",
@@ -34,6 +36,7 @@ export default {
   data() {
     return {
       isLoad: true, // 初始為 true，表示頁面正在載入
+      cartCount: 0,
     };
   },
   watch: {
@@ -43,6 +46,7 @@ export default {
       setTimeout(() => {
         this.isLoad = false;
       }, 500); // 你的特效持續時間
+      this.updateCartCount();
     },
   },
   mounted() {
@@ -50,6 +54,22 @@ export default {
     setTimeout(() => {
       this.isLoad = false;
     }, 2000);
+    this.updateCartCount();
+  },
+  methods: {
+    async updateCartCount() {
+      try {
+        const httpRes = await fetch(API.cart());
+        const res = await httpRes.json();
+        const carts = res?.data?.carts || [];
+        this.cartCount = carts.reduce(
+          (total, item) => total + (item.qty || 0),
+          0
+        );
+      } catch {
+        this.cartCount = 0;
+      }
+    },
   },
 };
 </script>
@@ -76,5 +96,22 @@ export default {
   width: 70%;
   height: 70%;
   object-fit: contain;
+}
+
+.cart-btn div {
+  position: relative;
+}
+
+.carts {
+  position: absolute;
+  width: 25px;
+  height: 25px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  right: -9px;
+  top: -8px;
+  font-size: 0.75rem;
 }
 </style>

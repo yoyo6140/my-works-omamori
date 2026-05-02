@@ -23,19 +23,63 @@
                 <label for="password" class="form-label d-block text-start"
                   >密碼</label
                 >
-                <input
-                  type="password"
-                  id="password"
-                  v-model="user.password"
-                  class="form-control"
-                  required
-                />
+                <div class="input-group">
+                  <input
+                    :type="showPassword ? 'text' : 'password'"
+                    id="password"
+                    v-model="user.password"
+                    class="form-control"
+                    autocomplete="current-password"
+                    required
+                  />
+                  <button
+                    type="button"
+                    class="btn btn-outline-secondary px-3"
+                    :aria-label="showPassword ? '隱藏密碼' : '顯示密碼'"
+                    :title="showPassword ? '隱藏密碼' : '顯示密碼'"
+                    @click="showPassword = !showPassword"
+                  >
+                    <i
+                      class="bi"
+                      :class="showPassword ? 'bi-eye-slash' : 'bi-eye'"
+                      aria-hidden="true"
+                    ></i>
+                  </button>
+                </div>
               </div>
               <button type="submit" class="btn btn-primary w-100">登入</button>
               <div v-if="errorMessage" class="alert alert-danger mt-3">
                 {{ errorMessage }}
               </div>
             </form>
+
+            <div class="mt-4 pt-3 border-top">
+              <p class="small text-muted mb-2">測試用帳號（點一下就複製）</p>
+              <div class="d-flex flex-column gap-2">
+                <button
+                  type="button"
+                  class="btn btn-sm btn-outline-secondary text-start d-flex align-items-center justify-content-between gap-2"
+                  @click="copyToClipboard(demoEmail, '已複製帳號')"
+                >
+                  <span>
+                    <span class="text-muted">帳號</span>
+                    <span class="font-monospace ms-2">{{ demoEmail }}</span>
+                  </span>
+                  <i class="bi bi-clipboard flex-shrink-0" aria-hidden="true"></i>
+                </button>
+                <button
+                  type="button"
+                  class="btn btn-sm btn-outline-secondary text-start d-flex align-items-center justify-content-between gap-2"
+                  @click="copyToClipboard(demoPassword, '已複製密碼')"
+                >
+                  <span>
+                    <span class="text-muted">密碼</span>
+                    <span class="font-monospace ms-2">{{ demoPassword }}</span>
+                  </span>
+                  <i class="bi bi-clipboard flex-shrink-0" aria-hidden="true"></i>
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -53,6 +97,9 @@ export default {
   components: { MyNavbar },
   data() {
     return {
+      showPassword: false,
+      demoEmail: "abc1425367989@gmail.com",
+      demoPassword: "test1234",
       user: {
         username: "",
         password: "",
@@ -61,6 +108,14 @@ export default {
     };
   },
   methods: {
+    async copyToClipboard(text, successMessage) {
+      try {
+        await navigator.clipboard.writeText(text);
+        notify.success(successMessage);
+      } catch {
+        notify.error("無法自動複製，請手動選取文字複製");
+      }
+    },
     async signIn() {
       try {
         const httpRes = await fetch(API.adminSignIn(), {

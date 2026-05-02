@@ -27,7 +27,7 @@
           <div class="col-md-9">
             <div class="row g-3" style="min-height: 200px;">
               <div v-for="item in filteredProducts" :key="item.id" class="col-md-4">
-                <div class="card h-100">
+                <div class="card h-100 d-flex flex-column">
                   <div class="card-img-top" 
                        :style="{ 
                           backgroundImage: `url(${item.imageUrl})`, 
@@ -37,7 +37,7 @@
                         }" 
                         @click="goProductPage(item.id)">
                   </div>
-                  <div class="mb-3">
+                  <div class="mb-3 flex-grow-1">
                     <div class="row">
                       <h5 class="card-title text-start">
                         <img :src="require('@/assets/torii.png')" alt="icon" style="width:20px; height:20px;" class="me-2">
@@ -48,6 +48,31 @@
                     </div>
                     <div class="row text-end">
                       <span class="text-warning">NT {{ item.price }} 元</span>
+                    </div>
+                  </div>
+
+                  <div class="px-2 pb-2 mt-auto">
+                    <span class="visually-hidden">數量</span>
+                    <div class="input-group input-group-sm">
+                      <button
+                        type="button"
+                        class="btn btn-outline-secondary"
+                        aria-label="減少數量"
+                        @click.stop="adjustCartQty(item.id, -1)"
+                      >
+                        −
+                      </button>
+                      <span
+                        class="input-group-text flex-grow-1 justify-content-center"
+                      >{{ cartQty(item.id) }}</span>
+                      <button
+                        type="button"
+                        class="btn btn-outline-secondary"
+                        aria-label="增加數量"
+                        @click.stop="adjustCartQty(item.id, 1)"
+                      >
+                        +
+                      </button>
                     </div>
                   </div>
 
@@ -109,7 +134,10 @@ export default {
       ],
       categoryFilter: '',  
       isLoading: true,
-      cartCount: 0
+      cartCount: 0,
+      cartQtyById: {},
+      cartQtyMin: 1,
+      cartQtyMax: 999,
     }
   },
   computed: {
@@ -118,6 +146,20 @@ export default {
     }
   },
   methods: {
+    cartQty(id) {
+      const raw = this.cartQtyById[id]
+      const n =
+        typeof raw === 'number' && !Number.isNaN(raw) ? raw : this.cartQtyMin
+      return Math.min(this.cartQtyMax, Math.max(this.cartQtyMin, n))
+    },
+    adjustCartQty(id, delta) {
+      const next = this.cartQty(id) + delta
+      const clamped = Math.min(
+        this.cartQtyMax,
+        Math.max(this.cartQtyMin, next)
+      )
+      this.cartQtyById = { ...this.cartQtyById, [id]: clamped }
+    },
     async getProducts() {
       try {
         const httpRes = await fetch(API.productsAll())
@@ -130,18 +172,20 @@ export default {
       }
     },
     async addCart(id) {
+      const qty = this.cartQty(id)
       try {
         const httpRes = await fetch(API.cart(), {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ data: { product_id: id, qty: 1 } }),
+          body: JSON.stringify({ data: { product_id: id, qty } }),
         })
         const res = await httpRes.json()
         if (res?.success === false) {
           notify.error(res.message || '加入購物車失敗')
           return
         }
-        notify.success('已加入購物車')
+        notify.success(qty > 1 ? `已加入購物車（${qty} 件）` : '已加入購物車')
+        this.cartQtyById = { ...this.cartQtyById, [id]: this.cartQtyMin }
         this.updateCartCount()
       } catch (err) {
         notify.error('加入購物車失敗')

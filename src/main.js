@@ -3,6 +3,7 @@ import App from './App.vue'
 
 // 引入 Bootstrap 5
 import 'bootstrap/dist/css/bootstrap.min.css'
+import 'bootstrap-icons/font/bootstrap-icons.css'
 import 'bootstrap/dist/js/bootstrap.bundle.min.js'
 
 // 引入 router

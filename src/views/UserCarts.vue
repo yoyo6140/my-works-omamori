@@ -109,7 +109,6 @@
 </template>
 
 <script>
-import Cookies from 'js-cookie'
 import MyNavbar from '@/components/MyNavbar.vue'
 import MyFooter from '@/components/MyFooter.vue'
 import { API } from '@/constants/api'
@@ -169,8 +168,8 @@ export default {
         notify.warn('購物車沒有商品，無法結帳！')
         return
       }
-      // 將購物車資料存在 cookie
-      Cookies.set('checkoutCart', JSON.stringify(this.cart), { expires: 1 })
+      // 將購物車資料存在 localStorage
+      localStorage.setItem('checkoutCart', JSON.stringify(this.cart))
       this.$router.push({ name: 'UserCheckout' })
     },
     async applyCoupon() {
