@@ -48,6 +48,28 @@
           <p class="fs-5 mb-2">
             <span class="text-danger fw-bold">價格:{{ product.price }} 元</span>
           </p>
+          <label class="form-label">數量</label>
+          <div class="input-group mb-3">
+            <button
+              type="button"
+              class="btn btn-outline-secondary"
+              aria-label="減少數量"
+              @click="adjustQty(-1)"
+            >
+              −
+            </button>
+            <span class="input-group-text flex-grow-1 justify-content-center">{{
+              productQty
+            }}</span>
+            <button
+              type="button"
+              class="btn btn-outline-secondary"
+              aria-label="增加數量"
+              @click="adjustQty(1)"
+            >
+              +
+            </button>
+          </div>
           <button class="btn btn-danger w-100" @click="addCart(product.id)">
             加到購物車
           </button>
@@ -86,11 +108,18 @@ export default {
         imagesUrl: []
       },
       isLoading: true,
-      cartCount:0
+      cartCount: 0,
+      productQty: 1,
+      qtyMin: 1,
+      qtyMax: 999,
     }
   },
   
   methods: {
+    adjustQty(delta) {
+      const next = this.productQty + delta
+      this.productQty = Math.min(this.qtyMax, Math.max(this.qtyMin, next))
+    },
     async getProduct() {
       const id = this.$route.params.id
       try {
@@ -105,18 +134,20 @@ export default {
       }
     },
     async addCart(id) {
+      const qty = Math.min(this.qtyMax, Math.max(this.qtyMin, this.productQty))
       try {
         const httpRes = await fetch(API.cart(), {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ data: { product_id: id, qty: 1 } }),
+          body: JSON.stringify({ data: { product_id: id, qty } }),
         })
         const res = await httpRes.json()
         if (res?.success === false) {
           notify.error(res.message || '加入購物車失敗')
           return
         }
-        notify.success('已加入購物車')
+        notify.success(qty > 1 ? `已加入購物車（${qty} 件）` : '已加入購物車')
+        this.productQty = 1
         this.updateCartCount()
       } catch (err) {
         notify.error('加入購物車失敗')
