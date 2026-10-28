@@ -35,14 +35,30 @@
                 <span>{{ item.product.title }}</span>
               </td>
               <td>NT {{ item.product.price || item.product.origin_price }} 元</td>
-              <td>
-                <input
-                  type="number"
-                  class="form-control"
-                  style="width:80px"
-                  v-model.number="item.qty"
-                  @change="updateCart(item)"
-                >
+              <td class="cart-qty-cell">
+                <div class="input-group input-group-sm cart-qty-group">
+                  <button
+                    type="button"
+                    class="btn btn-outline-secondary"
+                    aria-label="減少數量"
+                    :disabled="item.qty <= 1"
+                    @click="adjustQty(item, -1)"
+                  >
+                    −
+                  </button>
+                  <span
+                    class="input-group-text flex-grow-1 justify-content-center fw-semibold"
+                  >{{ item.qty }}</span>
+                  <button
+                    type="button"
+                    class="btn btn-outline-secondary"
+                    aria-label="增加數量"
+                    :disabled="item.qty >= 999"
+                    @click="adjustQty(item, 1)"
+                  >
+                    +
+                  </button>
+                </div>
               </td>
               <td>
                 NT {{ (item.product.price || item.product.origin_price) * item.qty }} 元
@@ -143,17 +159,28 @@ export default {
       }
     },
     async updateCart(item) {
-      const cart = { product_id: item.product_id, qty: item.qty }
+      const qty = Math.min(999, Math.max(1, Number(item.qty) || 1))
+      item.qty = qty
+      const cart = { product_id: item.product_id, qty }
       try {
-        await fetch(API.cartItem(item.id), {
+        const httpRes = await fetch(API.cartItem(item.id), {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ data: cart }),
         })
-        this.getCarts()
+        if (!httpRes.ok) throw new Error('bad status')
+        await this.getCarts()
       } catch (err) {
         notify.error('更新購物車失敗')
+        await this.getCarts()
       }
+    },
+    adjustQty(item, delta) {
+      const current = Number(item.qty) || 1
+      const next = Math.min(999, Math.max(1, current + delta))
+      if (next === current) return
+      item.qty = next
+      this.updateCart(item)
     },
     async removeCart(id) {
       try {
@@ -202,6 +229,16 @@ export default {
 </script>
 
 <style scoped>
+.cart-qty-cell {
+  white-space: nowrap;
+  vertical-align: middle;
+}
+
+.cart-qty-group {
+  width: 9rem;
+  max-width: 100%;
+}
+
 img {
   border-radius: 4px;
 }

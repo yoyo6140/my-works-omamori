@@ -9,7 +9,7 @@
     <my-footer></my-footer>
     <router-link :to="{ name: 'UserGoods' }" class="cart-btn" title="前往購物">
       <div>
-        <img :src="require('@/assets/buy.png')" alt="產品" class="cart-icon" />
+        <img :src="buyIcon" alt="產品" class="cart-icon" />
         <span class="carts bg-warning">{{ cartCount }}</span>
       </div>
     </router-link>
@@ -23,6 +23,7 @@ import OmamoriIntro from "@/components/OmamoriIntro.vue";
 import MyFooter from "@/components/MyFooter.vue";
 import LoadingSpinner from "@/components/LoadingSpinner.vue";
 import { API } from "@/constants/api";
+import buyIcon from "@/assets/buy.png";
 
 export default {
   name: "MyHome",
@@ -37,6 +38,7 @@ export default {
     return {
       isLoad: true, // 初始為 true，表示頁面正在載入
       cartCount: 0,
+      buyIcon,
     };
   },
   watch: {

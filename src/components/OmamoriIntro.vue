@@ -7,7 +7,7 @@
       <!-- 第一部分：神社介紹 (圖片左，文字右) -->
       <div class="row align-items-center mb-5">
         <div class="col-md-6 mb-4 mb-md-0">
-          <img :src="require('@/assets/omamoriinfo-1.png')" class="img-fluid rounded shadow-sm" alt="日本神社">
+          <img :src="infoImage1" class="img-fluid rounded shadow-sm" alt="日本神社">
         </div>
         <div class="col-md-6">
           <h4 class="mb-3">神社介紹</h4>
@@ -18,7 +18,7 @@
       <!-- 第二部分：參拜文化 (文字左，圖片右) -->
       <div class="row align-items-center mb-5">
         <div class="col-md-6 order-md-2 mb-4 mb-md-0">
-          <img :src="require('@/assets/omamoriinfo-2.png')" class="img-fluid rounded shadow-sm" alt="參拜">
+          <img :src="infoImage2" class="img-fluid rounded shadow-sm" alt="參拜">
         </div>
         <div class="col-md-6 order-md-1">
           <h4 class="mb-3">參拜文化</h4>
@@ -30,7 +30,7 @@
       <!-- 第三部分：御守(圖片左，文字右) -->
       <div class="row align-items-center mb-5">
         <div class="col-md-6 mb-4 mb-md-0">
-          <img :src="require('@/assets/omamoriinfo-3.png')" class="img-fluid rounded shadow-sm" alt="御守">
+          <img :src="infoImage3" class="img-fluid rounded shadow-sm" alt="御守">
         </div>
         <div class="col-md-6">
           <h4 class="mb-3">御守（お守り）</h4>
@@ -44,8 +44,19 @@
 </template>
 
 <script>
+import infoImage1 from '@/assets/omamoriinfo-1.png'
+import infoImage2 from '@/assets/omamoriinfo-2.png'
+import infoImage3 from '@/assets/omamoriinfo-3.png'
+
 export default {
-  name: "OmamoriCulture"
+  name: "OmamoriCulture",
+  data() {
+    return {
+      infoImage1,
+      infoImage2,
+      infoImage3,
+    }
+  }
 }
 </script>
 

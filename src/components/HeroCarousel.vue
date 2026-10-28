@@ -1,8 +1,13 @@
 <template>
   <div id="heroCarousel" class="carousel slide hero-carousel" data-bs-ride="carousel" data-bs-interval="2000">
-    <div class="carousel-inner">
-      <div class="carousel-item" v-for="(slide, index) in slides" :class="{ active: index === 0 }" :key="index">
-        <img :src="slide.image" class="d-block w-100" :alt="slide.alt">
+    <div class="carousel-inner hero-carousel-inner">
+      <div
+        class="carousel-item hero-carousel-item"
+        v-for="(slide, index) in slides"
+        :class="{ active: index === 0 }"
+        :key="index"
+      >
+        <img :src="slide.image" class="hero-carousel-img" :alt="slide.alt">
       </div>
     </div>
     <button class="carousel-control-prev" type="button" data-bs-target="#heroCarousel" data-bs-slide="prev">
@@ -29,15 +34,27 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
+/* 固定高度，換圖時版面不跳；圖片以 cover 置中裁切 */
 .hero-carousel {
-  max-height: 450px;       /* 限制幻燈片最大高度 */
-  overflow: hidden;        /* 超出部分隱藏 */
+  width: 100%;
+  height: min(420px, 45vh);
+  overflow: hidden;
 }
 
-.hero-carousel img {
-  width: 80%;             /* 撐滿寬度 */
-  height: 100%;            /* 撐滿容器高度 */
-  
+.hero-carousel-inner {
+  height: 100%;
+}
+
+.hero-carousel-item {
+  height: 100%;
+}
+
+.hero-carousel-img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
 }
 </style>

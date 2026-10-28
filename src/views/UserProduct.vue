@@ -83,7 +83,7 @@
   
   <router-link :to="{name:'UserCarts'}" class="cart-btn" title="前往購物車">
     <div>
-    <img :src="require('@/assets/carts.png')" alt="購物車" class="cart-icon">
+    <img :src="cartsIcon" alt="購物車" class="cart-icon">
     <span class="carts  bg-warning">{{ cartCount }}</span>
     </div>
   </router-link>
@@ -98,6 +98,7 @@ import LoadingSpinner from '@/components/LoadingSpinner.vue'
 import * as bootstrap from 'bootstrap'
 import { API } from '@/constants/api'
 import { notify } from '@/components/MessageToast.vue'
+import cartsIcon from '@/assets/carts.png'
 
 export default {
   name: 'UserProduct',
@@ -112,6 +113,7 @@ export default {
       productQty: 1,
       qtyMin: 1,
       qtyMax: 999,
+      cartsIcon,
     }
   },
   

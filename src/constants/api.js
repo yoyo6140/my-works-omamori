@@ -1,7 +1,7 @@
 import Cookies from 'js-cookie'
 
-export const API_BASE = process.env.VUE_APP_API
-export const API_PATH = process.env.VUE_APP_PATH
+export const API_BASE = import.meta.env.VITE_API
+export const API_PATH = import.meta.env.VITE_PATH
 
 export function apiUrl(path) {
   const base = (API_BASE || '').replace(/\/$/, '')

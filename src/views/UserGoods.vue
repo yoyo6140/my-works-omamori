@@ -17,7 +17,7 @@
                 class="list-group-item list-group-item-action"
                 :class="{ active: categoryFilter === cat }"
                 @click="categoryFilter = cat">
-                <img :src="require('@/assets/torii.png')" alt="icon" style="width:20px; height:20px;" class="me-2">
+                <img :src="toriiIcon" alt="icon" style="width:20px; height:20px;" class="me-2">
                 {{ cat }}
               </button>
             </div>
@@ -28,30 +28,39 @@
             <div class="row g-3" style="min-height: 200px;">
               <div v-for="item in filteredProducts" :key="item.id" class="col-md-4">
                 <div class="card h-100 d-flex flex-column">
-                  <div class="card-img-top" 
-                       :style="{ 
+                  <div
+                    class="card-img-top goods-card-thumb"
+                    :style="{ 
                           backgroundImage: `url(${item.imageUrl})`, 
                           height: '200px',
                           backgroundSize: 'cover',
                           backgroundPosition: 'center'
-                        }" 
-                        @click="goProductPage(item.id)">
-                  </div>
-                  <div class="mb-3 flex-grow-1">
-                    <div class="row">
-                      <h5 class="card-title text-start">
-                        <img :src="require('@/assets/torii.png')" alt="icon" style="width:20px; height:20px;" class="me-2">
-                        {{ item.title }}</h5>
-                    </div>
-                    <div class="row">
-                      <p class="card-text">商品:{{ item.description }}</p>
-                    </div>
-                    <div class="row text-end">
-                      <span class="text-warning">NT {{ item.price }} 元</span>
+                        }"
+                    role="button"
+                    tabindex="0"
+                    @click="goProductPage(item.id)"
+                    @keydown.enter="goProductPage(item.id)"
+                  />
+
+                  <div class="goods-card-intro flex-grow-1">
+                    <h5 class="goods-card-title mb-0">
+                      <img
+                        :src="toriiIcon"
+                        alt=""
+                        width="20"
+                        height="20"
+                        class="me-2 align-text-top goods-card-title-icon"
+                      >
+                      {{ item.title }}
+                    </h5>
+                    <p class="goods-intro-heading mb-1">商品介紹</p>
+                    <p class="goods-intro-text mb-0">{{ item.description || '—' }}</p>
+                    <div class="goods-price-row">
+                      <span class="goods-price">NT {{ item.price }} 元</span>
                     </div>
                   </div>
 
-                  <div class="px-2 pb-2 mt-auto">
+                  <div class="goods-qty-strip mt-auto px-3 pb-2">
                     <span class="visually-hidden">數量</span>
                     <div class="input-group input-group-sm">
                       <button
@@ -77,7 +86,7 @@
                   </div>
 
                   <!-- 底部黑色按鈕區 -->
-                  <div class="card-footer d-flex justify-content-between bg-dark">
+                  <div class="card-footer d-flex justify-content-between align-items-center gap-2 bg-dark px-3 py-3">
                     <button href="#"
                       class="btn btn-outline-warning btn-sm"
                       @click.prevent="goProductPage(item.id)">
@@ -101,7 +110,7 @@
      <!-- 右下固定購物車按鈕，直接路由跳轉 -->
     <router-link :to="{name:'UserCarts'}" class="cart-btn" title="前往購物車">
       <div>
-      <img :src="require('@/assets/carts.png')" alt="購物車" class="cart-icon">
+      <img :src="cartsIcon" alt="購物車" class="cart-icon">
       <span class="carts  bg-warning">{{ cartCount }}</span>
       </div>
     </router-link>
@@ -119,6 +128,8 @@ import MyFooter from '@/components/MyFooter.vue'
 import LoadingSpinner from '@/components/LoadingSpinner.vue'
 import { API } from '@/constants/api'
 import { notify } from '@/components/MessageToast.vue'
+import toriiIcon from '@/assets/torii.png'
+import cartsIcon from '@/assets/carts.png'
 
 export default {
   name:'UserGoods',
@@ -132,12 +143,14 @@ export default {
         "近畿・中國・四國（西部）",
         "九州・沖繩（南部）"
       ],
-      categoryFilter: '',  
+      categoryFilter: '',
       isLoading: true,
       cartCount: 0,
       cartQtyById: {},
       cartQtyMin: 1,
       cartQtyMax: 999,
+      toriiIcon,
+      cartsIcon,
     }
   },
   computed: {
@@ -228,6 +241,60 @@ export default {
 }
 .card:hover {
   transform: translateY(-5px);
+}
+
+.goods-card-thumb {
+  cursor: pointer;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.goods-card-intro {
+  padding: 1.125rem 1.25rem 1rem;
+  text-align: left;
+}
+
+.goods-card-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  line-height: 1.35;
+  color: #212529;
+}
+
+.goods-card-title-icon {
+  vertical-align: -0.2em;
+}
+
+.goods-intro-heading {
+  margin-top: 0.875rem;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #6c757d;
+}
+
+.goods-intro-text {
+  font-size: 0.9rem;
+  line-height: 1.6;
+  color: #495057;
+  display: -webkit-box;
+  line-clamp: 4;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.goods-price-row {
+  margin-top: 1rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
+  text-align: right;
+}
+
+.goods-price {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #fd7e14;
 }
 
 .container {

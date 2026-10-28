@@ -2,7 +2,7 @@
   <nav class="navbar navbar-expand-lg navbar-light bg-light shadow-sm">
     <div class="container-fluid">
       <router-link :to="{name:'MyHome'}" class="navbar-brand fw-bold">
-      <img src="logo.png" alt="Logo" width="30" class="d-inline-block align-text-top">
+      <img :src="logoSrc" alt="Logo" width="30" class="d-inline-block align-text-top">
       御守屋 Omamori
     </router-link>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
@@ -27,6 +27,11 @@
 import Cookies from 'js-cookie';
 export default {
     name:'MyNavbar',
+    data() {
+      return {
+        logoSrc: `${import.meta.env.BASE_URL}logo.png`,
+      }
+    },
      methods: {
         logout() {
             Cookies.remove('token')
